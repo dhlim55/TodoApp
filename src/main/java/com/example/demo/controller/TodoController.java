@@ -70,7 +70,7 @@ public class TodoController {
     }
     @GetMapping
     public ResponseEntity<?> retrieveTodoList() {
-        String temporaryUserId = "temporary-user";
+        String temporaryUserId = "temporary-user!";
 
         List<TodoEntity> entities = service.retrieve(temporaryUserId);
 
