@@ -70,7 +70,7 @@ public class TodoController {
     }
     @GetMapping
     public ResponseEntity<?> retrieveTodoList() {
-        String temporaryUserId = "temporary-user!";
+        String temporaryUserId = "temporary-user";
 
         List<TodoEntity> entities = service.retrieve(temporaryUserId);
 
@@ -82,6 +82,44 @@ public class TodoController {
         //(7)
         return ResponseEntity.ok().body(response);
 
+    }
 
+    @PutMapping
+    public ResponseEntity<?> updateTodo(@RequestBody TodoDTO dto) {
+        String temporaryUserId = "temporary-user";
+
+        TodoEntity entity = TodoDTO.toEntity(dto);
+
+        entity.setUserId(temporaryUserId);
+
+        List<TodoEntity> entities = service.update(entity);
+
+        List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
+
+        ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
+
+        return ResponseEntity.ok().body(response);
+    }
+    @DeleteMapping
+    public ResponseEntity<?> deleteTodo(@RequestBody TodoDTO dto) {
+        try {
+            String temporaryUserId = "temporary-user";
+
+            TodoEntity entity = TodoDTO.toEntity(dto);
+            entity.setUserId(temporaryUserId);
+
+            List<TodoEntity> entities = service.delete(entity);
+
+            List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
+
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            //(7)예외거 았는 경우 dto 대신 error에 메시지 리턴
+            String error = e.getMessage();
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 }
